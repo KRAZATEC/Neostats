@@ -1,0 +1,38 @@
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Secrets
+.streamlit/secrets.toml
+config/secrets.py
+
+# Vector store (rebuild on deploy)
+data/vector_store/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
