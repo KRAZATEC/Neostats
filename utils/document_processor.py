@@ -119,14 +119,16 @@ def extract_text(file_bytes: bytes, filename: str) -> str:
         Extracted text string
     """
     ext = Path(filename).suffix.lower()
-    extractors = {
-        ".pdf": extract_text_from_pdf,
-        ".docx": extract_text_from_docx,
-        ".doc": extract_text_from_docx,
-        ".csv": extract_text_from_csv,
-        ".txt": lambda b: b.decode("utf-8", errors="replace"),
-        ".md": lambda b: b.decode("utf-8", errors="replace"),
-    }
+extractors = {
+    ".pdf": extract_text_from_pdf,
+    ".docx": extract_text_from_docx,
+    ".doc": extract_text_from_docx,
+    ".csv": extract_text_from_csv,
+    ".txt": lambda b: b.decode("utf-8", errors="replace"),
+    ".md": lambda b: b.decode("utf-8", errors="replace"),
+    ".xlsx": lambda b: extract_text_from_excel(b, filename),
+    ".xls": lambda b: extract_text_from_excel(b, filename),
+}
     if ext not in extractors:
         raise ValueError(f"Unsupported file type: {ext}")
     try:
