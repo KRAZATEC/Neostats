@@ -70,6 +70,27 @@ def extract_text_from_csv(file_bytes: bytes) -> str:
         raise
 
 
+def extract_text_from_excel(file_bytes: bytes) -> str:
+    """Extract text from Excel (.xlsx, .xls) files using pandas."""
+    try:
+        import pandas as pd
+        df = pd.read_excel(io.BytesIO(file_bytes))
+        
+        # Convert each row to a readable text block
+        rows = []
+        for i, row in df.iterrows():
+            row_dict = row.to_dict()
+            row_text = " | ".join(f"{k}: {v}" for k, v in row_dict.items() if pd.notna(v))
+            rows.append(f"Row {i+1}: {row_text}")
+            
+        return "\n".join(rows)
+    except ImportError:
+        raise ImportError("Install pandas and openpyxl: pip install pandas openpyxl")
+    except Exception as e:
+        logger.error(f"Excel extraction error: {e}")
+        raise
+
+
 def extract_text(file_bytes: bytes, filename: str) -> str:
     """
     Route extraction to the appropriate parser based on file extension.
@@ -82,14 +103,16 @@ def extract_text(file_bytes: bytes, filename: str) -> str:
         Extracted text string
     """
     ext = Path(filename).suffix.lower()
-extractors = {
-    ".pdf": extract_text_from_pdf,
-    ".docx": extract_text_from_docx,
-    ".doc": extract_text_from_docx,
-    ".csv": extract_text_from_csv,
-    ".txt": lambda b: b.decode("utf-8", errors="replace"),
-    ".md": lambda b: b.decode("utf-8", errors="replace"),
-}
+    extractors = {
+        ".pdf": extract_text_from_pdf,
+        ".docx": extract_text_from_docx,
+        ".doc": extract_text_from_docx,
+        ".csv": extract_text_from_csv,
+        ".xlsx": extract_text_from_excel,
+        ".xls": extract_text_from_excel,
+        ".txt": lambda b: b.decode("utf-8", errors="replace"),
+        ".md": lambda b: b.decode("utf-8", errors="replace"),
+    }
     if ext not in extractors:
         raise ValueError(f"Unsupported file type: {ext}")
     try:

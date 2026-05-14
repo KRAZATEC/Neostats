@@ -74,7 +74,7 @@ class AppConfig:
 
     # Supported file types for RAG
     supported_file_types: list = field(default_factory=lambda: [
-        "pdf", "txt", "md", "docx", "csv"
+        "pdf", "txt", "md", "docx", "csv", "xlsx", "xls"
     ])
 
 
