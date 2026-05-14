@@ -411,7 +411,7 @@ def render_sidebar():
         if st.session_state.rag_enabled:
             st.caption(d["doc_hint"])
             uploaded = st.file_uploader("Upload Documents",
-                                        type=["pdf","txt","md","docx","csv","xlsx","xls"],
+                                        type=["pdf","txt","md","docx","csv"],
                                         accept_multiple_files=True)
             if uploaded:
                 vs = get_or_create_vector_store()
