@@ -69,43 +69,6 @@ def extract_text_from_csv(file_bytes: bytes) -> str:
         logger.error(f"CSV extraction error: {e}")
         raise
 
-def extract_text_from_excel(file_bytes: bytes, filename: str) -> str:
-    """Extract text from Excel workbooks (.xlsx, .xls), preserving sheet names."""
-    try:
-        import pandas as pd
-
-        ext = Path(filename).suffix.lower()
-        engine = "openpyxl" if ext == ".xlsx" else "xlrd"
-
-        sheets = pd.read_excel(
-            io.BytesIO(file_bytes),
-            sheet_name=None,
-            engine=engine
-        )
-
-        parts = []
-
-        for sheet_name, df in sheets.items():
-            if df is None or df.empty:
-                parts.append(f"Sheet: {sheet_name}\n(Empty sheet)")
-                continue
-
-            df = df.fillna("")
-            csv_like = df.to_csv(index=False)
-            parts.append(f"Sheet: {sheet_name}\n{csv_like}")
-
-        return "\n\n".join(parts)
-
-    except ImportError:
-        raise ImportError(
-            "Install pandas, openpyxl, and xlrd for Excel support: "
-            "pip install pandas openpyxl xlrd"
-        )
-
-    except Exception as e:
-        logger.error(f"Excel extraction error for {filename}: {e}")
-        raise
-
 
 def extract_text(file_bytes: bytes, filename: str) -> str:
     """
@@ -126,8 +89,6 @@ extractors = {
     ".csv": extract_text_from_csv,
     ".txt": lambda b: b.decode("utf-8", errors="replace"),
     ".md": lambda b: b.decode("utf-8", errors="replace"),
-    ".xlsx": lambda b: extract_text_from_excel(b, filename),
-    ".xls": lambda b: extract_text_from_excel(b, filename),
 }
     if ext not in extractors:
         raise ValueError(f"Unsupported file type: {ext}")
